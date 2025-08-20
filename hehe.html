@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Anniversary ❤️</title>
+  <style>
+    body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: url('background.jpg') no-repeat center center fixed;
+    background-size: cover;   /* supaya full screen */
+    color: white;
+    overflow-x: hidden;
+    text-align: center;
+    }
+
+    section {
+      display: none;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .active {
+      display: block;
+    }
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      background: #ff6f91;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      background: #ff3b6f;
+    }
+
+    /* Ucapan */
+    .text-area {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background: rgba(255,255,255,0.2);   /* transparan putih */
+        border-radius: 15px;
+        backdrop-filter: blur(8px);          /* efek blur */
+        -webkit-backdrop-filter: blur(8px);  /* support Safari */
+        font-size: 16px;
+        line-height: 1.6;
+        color: #000;                        /* teks hitam */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        text-align: left;
+        }
+
+    .text-area h2 {
+      text-align: center;
+      color: #ff6f91
+    }
+
+    /* Slideshow */
+    .slideshow {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 300px;
+      margin: 20px auto;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+    .slides {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 15px;
+    }
+    .prev, .next {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 10px 14px;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      user-select: none;
+    }
+    .next { right: 10px; }
+    .prev { left: 10px; }
+
+    /* Canvas untuk confetti & love */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Halaman 1: Tombol Awal -->
+  <section id="page1" class="active">
+    <h1>Selamat Datang Sayangku ❤️</h1>
+    <button onclick="showPage('page2')">Mulai Eksplorasi</button>
+  </section>
+
+  <!-- Halaman 2: Ucapan -->
+  <section id="page2">
+    <h1>Pesan Untukmu 💌</h1>
+    <div class="text-area">
+      <h2>Happy Anniversary</h2>
+      <p>
+        Terima kasih sudah selalu ada di sisiku.  
+        Setiap detik bersamamu adalah hadiah terindah yang tidak ternilai.  
+        Semoga cinta kita selalu tumbuh semakin kuat, semakin indah,  
+        dan semakin penuh kebahagiaan.  
+        Aku bersyukur dipertemukan denganmu,  
+        dan aku ingin selamanya bersamamu. ❤️  
+      </p>
+    </div>
+    <button onclick="showPage('page3')">Lanjut ke Kenangan Foto 📸</button>
+  </section>
+
+  <!-- Halaman 3: Slideshow Foto -->
+  <section id="page3">
+    <h1>Kenangan Indah Kita 💕</h1>
+    <div class="slideshow">
+      <img class="slides" src="foto1.jpg" alt="Kenangan 1">
+      <img class="slides" src="foto2.jpg" alt="Kenangan 2">
+      <img class="slides" src="foto3.jpg" alt="Kenangan 3">
+      <a class="prev" onclick="plusSlides(-1)">❮</a>
+      <a class="next" onclick="plusSlides(1)">❯</a>
+    </div>
+    <button onclick="showPage('page2')">⬅ Kembali ke Ucapan</button>
+  </section>
+
+  <!-- Musik -->
+  <audio id="backsound" loop>
+    <source src="lagu.mp3" type="audio/mp3">
+  </audio>
+
+  <!-- Canvas untuk confetti & love -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <script>
+    // Navigasi antar halaman
+    function showPage(pageId) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(pageId).classList.add("active");
+    }
+
+    // Musik play setelah klik pertama
+    function startMusic() {
+      const audio = document.getElementById("backsound");
+      audio.play().catch(() => {
+        console.log("Autoplay diblokir, tunggu interaksi user");
+      });
+      document.removeEventListener("click", startMusic);
+    }
+    document.addEventListener("click", startMusic);
+
+    // Slideshow
+    let slideIndex = 0;
+    showSlides(slideIndex);
+    function plusSlides(n) {
+      showSlides(slideIndex += n);
+    }
+    function showSlides(n) {
+      let slides = document.getElementsByClassName("slides");
+      if (n >= slides.length) { slideIndex = 0 }
+      if (n < 0) { slideIndex = slides.length - 1 }
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      slides[slideIndex].style.display = "block";
+    }
+
+    // Confetti + Love Animation
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+
+    const particles = [];
+    const shapes = ["❤️","💖","💘","💝"];
+    const colors = ["#ff4d6d", "#ff99c8", "#ffccd5", "#ff577f", "#ff85a1"];
+
+    for (let i = 0; i < 100; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 15 + 10,
+        d: Math.random() * 100,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        shape: shapes[Math.floor(Math.random() * shapes.length)],
+        tilt: Math.random() * 10 - 10,
+        tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+        tiltAngle: 0
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        ctx.font = `${p.r}px Arial`;
+        ctx.fillStyle = p.color;
+        ctx.fillText(p.shape, p.x, p.y);
+      });
+      update();
+    }
+
+    function update() {
+      particles.forEach(p => {
+        p.tiltAngle += p.tiltAngleIncremental;
+        p.y += (Math.cos(p.d) + 3 + p.r/2) / 2;
+        p.x += Math.sin(p.tiltAngle) * 2;
+
+        if (p.y > H) {
+          p.x = Math.random() * W;
+          p.y = -20;
+        }
+      });
+    }
+
+    setInterval(draw, 33);
+
+    window.addEventListener("resize", () => {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W;
+      canvas.height = H;
+    });
+  </script>
+
+</body>
+</html>
